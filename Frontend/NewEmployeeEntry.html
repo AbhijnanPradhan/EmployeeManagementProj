@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <title>New Employee</title>
+    </head>
+    <body>
+        <h1> Add employee</h1>
+        <form>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <td><input type="text" id="empID"></td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td><input type="text" id="empName"></td>
+                </tr>
+                <tr>
+                    <th>Contact</th>
+                    <td><input type="text" id="empContact"></td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td><input type="text" id="empID" ></td>
+                </tr>
+            </table>
+            <input type="button"  onclick="addEmp()">
+        </form>
+
+        <p id = "status"></p>
+        
+        <hr/>
+        
+        <h1> remove employee</h1>
+        <input type="text" id="empID1">
+        <input type="button"  onclick="removeEmp()">
+        <p id = "status1"></p>
+        <hr/>
+
+        
+        <script>
+            var empID = document.getElementById("empID");
+            var empName = document.getElementById("empName");
+            var empContact = document.getElementById("empContact");
+            var empEmail = document.getElementById("empEmail");
+            function addEmp(){
+                let Employee = class{
+                constructor(empID, empName, empContact, empEmail){
+                    this.empID = empID;
+                    this.empName = empName;
+                    this.empContact = empContact;
+                    this.empEmail = empEmail;
+                    }
+                }
+                emp = new Employee(empID, empName, empContact, empEmail);
+
+                fetch('http://localhost:8080/employee/add',{
+                        method:'POST',
+                        headers:{
+                            "Content-Type":"application/json"
+                        },
+                        body:JSON.stringify(emp)
+                    })
+                    .then(response=>{
+                        ////console.log(response);
+                        if(response.status===201){
+                            document.getElementById('status').innerHTML = "<b>Successful</b>";
+                            return response.json();
+                        }
+                        else if(response.status===409){
+                            document.getElementById('status').innerHTML = "Employee Already exists";
+                            return Promise.reject('Employee Already exists');
+                        }
+                        else if(response.status === 400 ){
+                            document.getElementById('status').innerHTML = "BAD REQUEST";
+                            return Promise.reject('BAD REQUEST');
+                        }
+                    });
+            }
+        
+            var empID1 = document.getElementById("empID1");
+            function removeEmp(){
+                var url = new URL("http://localhost:8080/employee/remove");
+                url.searchParams.set('empID', String(empID1));
+                fetch(url,{
+                        method:'POST',
+                        headers:{
+                            "Content-Type":"application/json"
+                        }
+                    })
+                    .then(response=>{
+                        ////console.log(response);
+                        if(response.status===202){
+                            document.getElementById('status1').innerHTML = "Deleted Successfully";
+                            return response.json();
+                        }
+                        else if(response.status===204){
+                            document.getElementById('status1').innerHTML = "Employee does not exists";
+                            return Promise.reject('Employee does not exists');
+                        }
+                        else if(response.status === 400 ){
+                            document.getElementById('status1').innerHTML = "BAD REQUEST";
+                            return Promise.reject('BAD REQUEST');
+                        }
+                    });
+            }
+	    </script>
+
+
+    </body>
+</html>

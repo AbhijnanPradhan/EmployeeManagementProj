@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <title>All Employee</title>
+    </head>
+    <body onload="getAllEmps()">
+            <table id = "AllEmployeeTable">
+                
+
+
+            </table> 
+            
+            <input type="text" id="empID2">
+            <input type="button"  onclick="getEmpByID()">
+            <p id = "status2"></p>
+            <table id="EmployeeByIDTable">
+
+
+            </table>
+        <script>
+            function getAllEmps(){
+                let fetchPromise = fetch(`http://localhost:8080/employee/getAll`);
+                let p1 = fetchPromise.then((data)=>{
+                    console.log(data);
+                    if(data.status===200)
+                    {
+                        console.log('Response Received')
+                        return data.json();
+                    }else{
+                        console.log(`Error in Fetching`)
+                        return Promise.reject('Failed to Fetch Favorite Movies Records')
+                    }
+                });
+                p1.then((response)=>{
+                    //console.log("favs:"+populateHtml(favs,"favouritesList"));
+                    // empTableData = response;
+                    populateHtmlAllEmp(response);
+                    // return(response);
+                })
+                p1.catch((error)=>{
+                    ////console.log(error);
+                    // return error;
+                })
+                return p1;
+            }
+            
+            function populateHtmlAllEmp(empList = null){
+                let check = true;
+                if(!empList)
+                    check=false;
+                if(check){
+                    let idToFill = document.getElementById('AllEmployeeTable');
+                    let bodyHtml='';
+                    empList.forEach(emp=>{
+                        ////console.log(JSON.stringify(record));
+                        ////console.log(typeof(record));
+                        let tr = `<tr>
+                            <td>${emp.empID}</td>
+                            <td>${emp.empID}</td>
+                            <td>${emp.empName}</td>
+                            <td>${emp.empContact}</td>
+                            <td>${emp.empEmail}</td>
+                        </tr>`
+                        bodyHtml += tr;
+                    });
+                idToFill.innerHTML = bodyHtml;
+                }
+            }
+            var empID2 = document.getElementById("empID2");
+            function getEmpByID(){
+                var url = new URL("http://localhost:8080/employee/getByID");
+                url.searchParams.set('empID', String(empID2));
+                let fetchPromise = fetch(url);
+                let p1 = fetchPromise.then((data)=>{
+                    console.log(data);
+                    if(data.status===200)
+                    {
+                        document.getElementById('status2').innerHTML = "Response Received";
+                        return data.json();
+                    }else{
+                        document.getElementById('status2').innerHTML = "Error in Fetching";
+                        return Promise.reject('Failed to Fetch');
+                    }
+                });
+                p1.then((response)=>{
+                    // empByID = response;
+                    populateHtmlEmpByID(response);
+                    // return(response);
+                })
+                p1.catch((error)=>{
+                    ////console.log(error);
+                    // return error;
+                })
+                return p1;
+            }
+            function populateHtmlEmpByID(emp){
+                document.getElementById('EmployeeByIDTable').innerHTML = `<tr>
+                            <td>${emp.empID}</td>
+                            <td>${emp.empID}</td>
+                            <td>${emp.empName}</td>
+                            <td>${emp.empContact}</td>
+                            <td>${emp.empEmail}</td>
+                        </tr>` ;
+            }
+        </script>
+    </body>
+</html>
